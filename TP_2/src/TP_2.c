@@ -3,6 +3,7 @@
 #include <string.h>
 #include <ctype.h>
 #include "ArrayEmployees.h"
+#include "input.h"
 
 #define LENGTH 1000
 
@@ -22,8 +23,6 @@ int main()
 
     do
     {
-        system("cls");
-
         switch(menu())
         {
             case 1:
@@ -44,7 +43,7 @@ int main()
                 }
                 else
                 {
-                   printf("No hay ningún empleado dado de alta para modificar.\n");
+                   printf("\nNo hay ningun empleado dado de alta para modificar.\n\n");
                 }
                 break;
             case 3:
@@ -54,21 +53,9 @@ int main()
                 }
                 else
                 {
-                   printf("No hay ningún empleado dado de alta para dar de baja.\n");
+                   printf("\nNo hay ningun empleado dado de alta para dar de baja.\n\n");
                 }
-
-                for(int i=0; i<LENGTH; i++)
-                {
-                    if(arrayEmployees[i].isEmpty)
-                    {
-                        option1=0;
-                    }
-                    else
-                    {
-                        option1=1;
-                        break;
-                    }
-                }
+                allowAccess(arrayEmployees, LENGTH, &option1);
                 break;
             case 4:
                 if(option1)
@@ -77,11 +64,11 @@ int main()
                 }
                 else
                 {
-                   printf("No hay ningún empleado dado de alta para informar.\n");
+                   printf("\nNo hay ningun empleado dado de alta para informar.\n\n");
                 }
                 break;
             case 5:
-                checkCharacter(&salir, "\nConfirmar salida (S/N): ", "Opción inválida. Confirmar salida (S/N): ", 'S', 'N');
+                checkCharacter(&salir, "\nConfirmar salida (S/N): ", "Opcion invalida. Confirmar salida (S/N): ", 'S', 'N');
 
                 if(salir=='S')
                 {
@@ -89,11 +76,10 @@ int main()
                 }
                 break;
             default:
-                printf("Opción inválida. Ingrese una opción del 1 al 5.\n");
+                printf("\nOpcion invalida. Ingrese una opcion del 1 al 5.\n\n");
                 fflush(stdin);
                 break;
         }
-        system("pause");
     }while(seguir=='s');
 
     return 0;

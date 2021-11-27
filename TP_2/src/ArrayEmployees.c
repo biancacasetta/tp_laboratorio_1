@@ -3,23 +3,7 @@
 #include <string.h>
 #include <ctype.h>
 #include "ArrayEmployees.h"
-
-int menu()
-{
-    int option;
-
-    printf("          SISTEMA DE EMPLEADOS           \n");
-    printf("-----------------------------------------\n\n");
-    printf("1. Dar de alta\n");
-    printf("2. Modificar\n");
-    printf("3. Dar de baja\n");
-    printf("4. Informes\n");
-    printf("5. Salir\n\n");
-    printf("Ingrese una opción: ");
-    scanf("%d", &option);
-
-    return option;
-}
+#include "input.h"
 
 int initEmployees(Employee list[], int len)
 {
@@ -54,14 +38,14 @@ int availability(Employee list[], int len)
     return availableIndex;
 }
 
-void printEmployee(Employee anEmployee, int len)
+void printEmployee(Employee anEmployee)
 {
-    printf("%-5d%-21s%-21s%-14.2f%-11d\n",
-           anEmployee.id,
-           anEmployee.name,
-           anEmployee.lastName,
-           anEmployee.salary,
-           anEmployee.sector);
+    printf("%-5d%-21s%-21s%-14.2f%-5d\n",
+            anEmployee.id,
+            anEmployee.name,
+            anEmployee.lastName,
+            anEmployee.salary,
+            anEmployee.sector);
 }
 
 int printEmployees(Employee list[], int len)
@@ -72,14 +56,14 @@ int printEmployees(Employee list[], int len)
 
     if(list!=NULL && len>0)
     {
-        printf(" ID |       NOMBRE       |      APELLIDO      |   SALARIO   |  SECTOR  \n");
-        printf("-----------------------------------------------------------------------\n");
+        printf(" ID |       NOMBRE       |      APELLIDO      |   SALARIO   | SECTOR \n");
+        printf("---------------------------------------------------------------------\n");
 
         for(i=0; i<len; i++)
         {
             if(!list[i].isEmpty)
             {
-                printEmployee(list[i], len);
+                printEmployee(list[i]);
                 flag=1;
             }
         }
@@ -94,154 +78,6 @@ int printEmployees(Employee list[], int len)
     }
 
     return error;
-}
-
-int justLetters(char string[])
-{
-    int error=0;
-    int i=0;
-
-    if(string!=NULL)
-    {
-        while(string[i]!='\0')
-        {
-            if(!isalpha(string[i]) && string[i]!=' ')
-            {
-                error=-1;
-
-                while(error<0)
-                {
-                    printf("Solo puede ingresar letras. Inténtelo de nuevo (hasta 20 caracteres): ");
-                    gets(string);
-                    error=0;
-                    i=0;
-                }
-            }
-            i++;
-        }
-    }
-    return error;
-}
-
-int capitalisation(char string[])
-{
-    int error=-1;
-    int i=0;
-
-    strlwr(string);
-    string[0]=toupper(string[0]);
-
-    while(string[i]!='\0')
-    {
-        if(string[i]==' ')
-        {
-            string[i+1]=toupper(string[i+1]);
-            error=0;
-        }
-        i++;
-    }
-    return error;
-}
-
-int checkString(char string[], char message[], char errorMessage[], int min, int max)
-{
-    int error=-1;
-	char aux[100];
-
-	if(string!=NULL && message!=NULL && errorMessage!=NULL && max>0)
-	{
-		printf("%s", message);
-		fflush(stdin);
-		gets(aux);
-		justLetters(aux);
-
-		while(strlen(aux)<min|| strlen(aux)>max)
-		{
-			printf("%s", errorMessage);
-			fflush(stdin);
-			gets(aux);
-			justLetters(aux);
-		}
-		capitalisation(aux);
-
-		strcpy(string, aux);
-		error=0;
-	}
-
-	return error;
-}
-
-int checkFloat(float* number, char message[], char errorMessage[], float min, float max)
-{
-    int error=-1;
-    float inputNumber;
-
-	if(number!=NULL && message!= NULL && errorMessage!=NULL && min<max)
-	{
-		printf("%s", message);
-		scanf("%f", &inputNumber);
-
-		while(inputNumber<min || inputNumber>max)
-		{
-			printf("%s", errorMessage);
-			scanf("%f", &inputNumber);
-		}
-
-        *number=inputNumber;
-		error=0;
-	}
-
-	return error;
-}
-
-int checkInteger(int* number, char message[], char errorMessage[], int min, int max)
-{
-    int error=-1;
-    int inputNumber;
-
-	if(number!=NULL && message!= NULL && errorMessage!=NULL && min<max)
-	{
-		printf("%s", message);
-		scanf("%d", &inputNumber);
-
-		while(inputNumber<min || inputNumber>max)
-		{
-			printf("%s", errorMessage);
-			scanf("%d", &inputNumber);
-		}
-
-        *number=inputNumber;
-		error=0;
-	}
-
-	return error;
-}
-
-int checkCharacter(char* character, char message[], char errorMessage[], char validCharacter1, char validCharacter2)
-{
-    int error=-1;
-    char inputCharacter;
-
-	if(character!=NULL && message!=NULL && errorMessage!=NULL)
-	{
-		printf("%s", message);
-		fflush(stdin);
-		scanf("%c", &inputCharacter);
-		inputCharacter=toupper(inputCharacter);
-
-		while(inputCharacter!=validCharacter1 && inputCharacter!=validCharacter2)
-		{
-			printf("%s", errorMessage);
-			fflush(stdin);
-			scanf("%c", &inputCharacter);
-			inputCharacter=toupper(inputCharacter);
-		}
-
-        *character=inputCharacter;
-		error=0;
-	}
-
-	return error;
 }
 
 int addEmployee(Employee list[], int len, int id, char name[], char lastName[], float salary, int sector)
@@ -262,48 +98,51 @@ int addEmployee(Employee list[], int len, int id, char name[], char lastName[], 
             printf("------------------------------------------------------------------\n\n");
 
             checkString(name,
-                        "Ingrese el/los nombre(s) del empleado (1 a 20 caracteres): ",
-                        "Nombre demasiado largo. Ingrese el/los nombre(s) del empleado (1 a 20 caracteres): ",
-                        1,
+                        "Ingrese el/los nombre(s) del empleado (3 a 20 caracteres): ",
+                        "Nombre demasiado largo/corto. Ingrese el/los nombre(s) del empleado (3 a 20 caracteres): ",
+                        3,
                         20);
             strcpy(list[availableIndex].name, name);
 
             checkString(lastName,
-                        "Ingrese el/los apellido(s) del empleado (1 a  20 caracteres): ",
-                        "Apellido demasiado largo. Ingrese el/los apellido(s) del empleado (1 a 20 caracteres): ",
-                        1,
+                        "Ingrese el/los apellido(s) del empleado (3 a  20 caracteres): ",
+                        "Apellido demasiado largo/corto. Ingrese el/los apellido(s) del empleado (3 a 20 caracteres): ",
+                        3,
                         20);
             strcpy(list[availableIndex].lastName, lastName);
 
             checkFloat(&salary,
-                       "Ingrese el salario del empleado (mayor a 0): ",
-                       "Salario inválido. Ingrese el salario del empleado (mayor a 0): ",
-                       0.00,
-                       1000000.00);
+                       "Ingrese el salario del empleado (1 a 100000): ",
+                       "Salario invalido. Ingrese el salario del empleado (1 a 100000): ",
+                       1,
+                       100000);
             list[availableIndex].salary=salary;
 
+            fflush(stdin);
+
             checkInteger(&sector,
-                         "Ingrese el sector del empleado: ",
-                         "Sector inválido. Ingrese el sector del empleado: ",
-                         0,
-                         100);
+                         "Ingrese el sector del empleado (1 a 5): ",
+                         "Sector inválido. Ingrese el sector del empleado (1 a 5): ",
+                         1, 5);
             list[availableIndex].sector=sector;
+
+            fflush(stdin);
 
             list[availableIndex].isEmpty=0;
 
             printf("\nAlta exitosa.\n");
             printf("Se ha dado de alta al siguiente empleado: \n\n");
 
-            printf(" ID |       NOMBRE       |      APELLIDO      |   SALARIO   |  SECTOR  \n");
-            printf("-----------------------------------------------------------------------\n");
-            printEmployee(list[availableIndex], len);
+            printf(" ID |       NOMBRE       |      APELLIDO      |   SALARIO   | SECTOR \n");
+            printf("---------------------------------------------------------------------\n");
+            printEmployee(list[availableIndex]);
             printf("\n");
 
             error=0;
         }
         else
         {
-            printf("\nNo hay más lugar disponible para nuevas altas.\n\n");
+            printf("\nNo hay mas lugar disponible para nuevas altas.\n\n");
         }
     }
 
@@ -348,13 +187,13 @@ int removeEmployee(Employee list[], int len, int id)
 
         if(idIndex>=0)
         {
-            printf(" ID |       NOMBRE       |      APELLIDO      |   SALARIO   |  SECTOR  \n");
-            printf("-----------------------------------------------------------------------\n");
-            printEmployee(list[idIndex], len);
+            printf(" ID |       NOMBRE       |      APELLIDO      |   SALARIO   | SECTOR \n");
+            printf("---------------------------------------------------------------------\n");
+            printEmployee(list[idIndex]);
 
             checkCharacter(&confirmation,
                            "\nConfirmar baja (S/N): ",
-                           "Respuesta inválida. Confirmar baja (S/N): ",
+                           "Respuesta invalida. Confirmar baja (S/N): ",
                            'S',
                            'N');
 
@@ -366,9 +205,9 @@ int removeEmployee(Employee list[], int len, int id)
                 system("cls");
                 printf("\nBaja exitosa.\n");
                 printf("Se ha dado de baja al siguiente empleado: \n\n");
-                printf(" ID |       NOMBRE       |      APELLIDO      |   SALARIO   |  SECTOR  \n");
-                printf("-----------------------------------------------------------------------\n");
-                printEmployee(list[idIndex], len);
+                printf(" ID |       NOMBRE       |      APELLIDO      |   SALARIO   | SECTOR \n");
+                printf("---------------------------------------------------------------------\n");
+                printEmployee(list[idIndex]);
                 printf("\n");
             }
         }
@@ -378,22 +217,6 @@ int removeEmployee(Employee list[], int len, int id)
         }
     }
     return error;
-}
-
-int editSubMenu()
-{
-    int option;
-
-    printf("1. Nombre\n");
-    printf("2. Apellido\n");
-    printf("3. Salario\n");
-    printf("4. Sector\n");
-    printf("5. Cancelar\n\n");
-    printf("Seleccione el dato que desea modificar: ");
-    scanf("%d", &option);
-    printf("\n");
-
-    return option;
 }
 
 int editEmployee(Employee list[], int len, int id)
@@ -436,9 +259,9 @@ int editEmployee(Employee list[], int len, int id)
         if(idIndex>=0)
         {
             system("cls");
-            printf(" ID |       NOMBRE       |      APELLIDO      |   SALARIO   |  SECTOR  \n");
-            printf("-----------------------------------------------------------------------\n");
-            printEmployee(list[idIndex], len);
+            printf(" ID |       NOMBRE       |      APELLIDO      |   SALARIO   | SECTOR \n");
+            printf("---------------------------------------------------------------------\n");
+            printEmployee(list[idIndex]);
             printf("\n");
 
             option=editSubMenu();
@@ -447,54 +270,58 @@ int editEmployee(Employee list[], int len, int id)
             {
                 case 1:
                     checkString(auxEmployee.name,
-                                "Ingrese el/los nombre(s) del empleado (1 a 20 caracteres): ",
-                                "Nombre demasiado corto/largo. Ingrese el/los nombre(s) del empleado (1 a 20 caracteres): ",
-                                1,
+                                "Ingrese el/los nombre(s) del empleado (3 a 20 caracteres): ",
+                                "Nombre demasiado corto/largo. Ingrese el/los nombre(s) del empleado (3 a 20 caracteres): ",
+                                3,
                                 20);
                     strcpy(list[idIndex].name, auxEmployee.name);
                     break;
                 case 2:
                     checkString(auxEmployee.lastName,
-                                "Ingrese el/los apellido(s) del empleado (1 a 20 caracteres): ",
-                                "Apellido demasiado corto/largo. Ingrese el/los apellido(s) del empleado (1 a 20 caracteres): ",
-                                1,
+                                "Ingrese el/los apellido(s) del empleado (3 a 20 caracteres): ",
+                                "Apellido demasiado corto/largo. Ingrese el/los apellido(s) del empleado (3 a 20 caracteres): ",
+                                3,
                                 20);
                     strcpy(list[idIndex].lastName, auxEmployee.lastName);
                     break;
                 case 3:
                     checkFloat(&auxEmployee.salary,
-                               "Ingrese el salario del empleado (mayor a 0): ",
-                               "Salario inválido. Ingrese el salario del empleado (mayor a 0): ",
-                               0.00,
-                               1000000.00);
+                               "Ingrese el salario del empleado (1 a 100000): ",
+                               "Salario invalido. Ingrese el salario del empleado (1 a 100000): ",
+                               1,
+                               100000);
 
                                list[idIndex].salary=auxEmployee.salary;
+
+                               fflush(stdin);
                     break;
                 case 4:
                     checkInteger(&auxEmployee.sector,
-                                 "Ingrese el sector del empleado: ",
-                                 "Sector inválido. Ingrese el sector del empleado: ",
-                                 0,
-                                 100);
+                                 "Ingrese el sector del empleado (1 a 5): ",
+                                 "Sector invalido. Ingrese el sector del empleado (1 a 5): ",
+                                 1,
+                                 5);
 
                                  list[idIndex].sector=auxEmployee.sector;
+
+                                 fflush(stdin);
                     break;
                 case 5:
-                    printf("\n");
+                    printf("\nModificacion cancelada.\n\n");
                     break;
                 default:
-                    printf("Opción inválida. Ingrese una opción del 1 al 5.\n");
+                    printf("Opcion invalida. Vuelva a ingresar y selecciona una opcion del 1 al 5.\n");
                     break;
             }
 
-            if(option<5)
+            if(option<5 && option>0)
             {
                 system("cls");
-                printf("Modificación exitosa.\n");
+                printf("Modificacion exitosa.\n");
                 printf("Se ha modificado al siguiente empleado: \n\n");
-                printf(" ID |       NOMBRE       |      APELLIDO      |   SALARIO   |  SECTOR  \n");
-                printf("-----------------------------------------------------------------------\n");
-                printEmployee(list[idIndex], len);
+                printf(" ID |       NOMBRE       |      APELLIDO      |   SALARIO   | SECTOR \n");
+                printf("---------------------------------------------------------------------\n");
+                printEmployee(list[idIndex]);
                 printf("\n");
             }
 
@@ -508,27 +335,11 @@ int editEmployee(Employee list[], int len, int id)
     return error;
 }
 
-int sortSubMenu()
-{
-    int option;
-
-    system("cls");
-    printf("                  INFORMES                    \n");
-    printf("----------------------------------------------\n\n");
-    printf("1. Informar empleados por apellido y sector\n");
-    printf("2. Informar total y promedio de salarios\n");
-    printf("3. Cancelar\n\n");
-    printf("Ingrese la opción de informe: ");
-    scanf("%d", &option);
-
-    return option;
-}
-
 int calculateSalary(Employee list[], int len)
 {
     int error=-1;
 
-    int salarySum=0;
+    float salarySum=0;
     int salaryQuantity=0;
     int aboveAverageSalary=0;
     float average;
@@ -546,18 +357,18 @@ int calculateSalary(Employee list[], int len)
 
         average=salarySum/salaryQuantity;
 
-        printf("El total de salarios es %d.\n", salarySum);
+        printf("El total de salarios es %.2f.\n", salarySum);
         printf("El promedio de salarios es %.2f.\n\n", average);
 
-        printf(" ID |       NOMBRE       |      APELLIDO      |   SALARIO   |  SECTOR  \n");
-        printf("-----------------------------------------------------------------------\n");
+        printf(" ID |       NOMBRE       |      APELLIDO      |   SALARIO   | SECTOR \n");
+        printf("---------------------------------------------------------------------\n");
 
         for(int i=0; i<len; i++)
         {
             if(!list[i].isEmpty && list[i].salary>average)
             {
                 aboveAverageSalary++;
-                printEmployee(list[i], len);
+                printEmployee(list[i]);
             }
         }
 
@@ -634,7 +445,7 @@ int sortEmployees(Employee list[], int len, int order)
                         printEmployees(list, len);
                         break;
                     default:
-                        printf("Opcion invalida.");
+                        printf("Opcion invalida. Vuelva a ingresar y selecciona una opcion del 1 al 2.");
                         break;
                 }
                 break;
@@ -645,14 +456,33 @@ int sortEmployees(Employee list[], int len, int order)
                 calculateSalary(list, len);
                 break;
             case 3:
-                printf("\n");
+                printf("\nInforme cancelado.\n\n");
                 break;
             default:
-                printf("Opción inválida.\n");
+                printf("\nOpcion invalida. Vuelva a ingresar y selecciona una opcion del 1 al 3.\n\n");
                 break;
         }
         error=0;
     }
 
+    return error;
+}
+
+int allowAccess(Employee list[], int len, int* flag)
+{
+    int error=-1;
+
+    for(int i=0; i<len; i++)
+    {
+        if(list[i].isEmpty)
+        {
+            *flag=0;
+        }
+        else
+        {
+            *flag=1;
+            break;
+        }
+                }
     return error;
 }
